@@ -1,0 +1,118 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Pagina-1" id="GDt49nEnTDDHF-rwNPhj">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-11" edge="1" parent="1" source="WqgOdc0bc3OR8lgKfsx4-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" target="WqgOdc0bc3OR8lgKfsx4-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-2" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Utente" vertex="1">
+          <mxGeometry height="200" width="200" x="-630" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-3" parent="WqgOdc0bc3OR8lgKfsx4-2" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;id_utete&lt;/div&gt;nome&lt;div&gt;cognome&lt;/div&gt;&lt;div&gt;email&lt;/div&gt;&lt;div&gt;password_hash&lt;/div&gt;&lt;div&gt;ruolo&lt;/div&gt;&lt;div&gt;data_registrazione&lt;/div&gt;" vertex="1">
+          <mxGeometry height="112.5" width="161.5" x="19" y="43.75" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-6" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Iscrizione" vertex="1">
+          <mxGeometry height="200" width="200" x="-237" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-8" parent="WqgOdc0bc3OR8lgKfsx4-6" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;id_iscrizione&lt;/div&gt;id_utente&lt;div&gt;id_torneo&lt;/div&gt;&lt;div&gt;data_iscrizione&lt;/div&gt;" vertex="1">
+          <mxGeometry height="55" width="100" x="50" y="72.5" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-1" edge="1" parent="1" source="WqgOdc0bc3OR8lgKfsx4-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;shape=flexArrow;" target="WqgOdc0bc3OR8lgKfsx4-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-18" edge="1" parent="1" source="WqgOdc0bc3OR8lgKfsx4-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;shape=flexArrow;" target="94TMhOpVCCse5GZkjFPI-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-9" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Torneo" vertex="1">
+          <mxGeometry height="200" width="200" x="450" y="565" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-10" parent="WqgOdc0bc3OR8lgKfsx4-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="id_torneo&lt;div&gt;nome&lt;/div&gt;&lt;div&gt;descrizione&lt;/div&gt;&lt;div&gt;datainizioiscrizione&lt;/div&gt;&lt;div&gt;datafinedescrizione&lt;/div&gt;" vertex="1">
+          <mxGeometry height="96.25" width="140" x="30" y="51.87" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1" vertex="1">
+          <mxGeometry height="30" width="60" x="-437" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="n" vertex="1">
+          <mxGeometry height="30" width="60" x="-297" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-14" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-37" y="469" as="sourcePoint" />
+            <mxPoint x="156" y="469" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1" vertex="1">
+          <mxGeometry height="30" width="60" x="103" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-16" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="n" vertex="1">
+          <mxGeometry height="30" width="60" x="-47" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-20" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Tabella per relazione n a n" vertex="1">
+          <mxGeometry height="30" width="200" x="-237" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-21" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Torneo_individuale" vertex="1">
+          <mxGeometry height="200" width="200" x="163" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="WqgOdc0bc3OR8lgKfsx4-22" parent="WqgOdc0bc3OR8lgKfsx4-21" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="id_torneo_individuale&lt;div&gt;id_torneo&lt;br&gt;&lt;div&gt;max_partecipanti&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="96.25" width="140" x="30" y="51.87" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-2" edge="1" parent="1" source="94TMhOpVCCse5GZkjFPI-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" target="94TMhOpVCCse5GZkjFPI-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-3" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Componente_squadra" vertex="1">
+          <mxGeometry height="200" width="200" x="-630" y="750" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-4" parent="94TMhOpVCCse5GZkjFPI-3" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="id_componente_squadra&lt;div&gt;id_squadra&lt;/div&gt;&lt;div&gt;id_utente&lt;/div&gt;&lt;div&gt;data_inserimento&lt;/div&gt;" vertex="1">
+          <mxGeometry height="112.5" width="161.5" x="19" y="43.75" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-5" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Squadra" vertex="1">
+          <mxGeometry height="200" width="200" x="-237" y="750" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-6" parent="94TMhOpVCCse5GZkjFPI-5" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;id_squadra&lt;/div&gt;id_torneo&lt;div&gt;nome&lt;/div&gt;&lt;div&gt;id_creatore&lt;/div&gt;&lt;div&gt;data_creazione&lt;/div&gt;" vertex="1">
+          <mxGeometry height="55" width="100" x="50" y="72.5" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-7" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1" vertex="1">
+          <mxGeometry height="30" width="60" x="-530" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="n" vertex="1">
+          <mxGeometry height="30" width="60" x="-530" y="713.12" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-9" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-37" y="849" as="sourcePoint" />
+            <mxPoint x="156" y="849" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-10" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1" vertex="1">
+          <mxGeometry height="30" width="60" x="103" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-11" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="n" vertex="1">
+          <mxGeometry height="30" width="60" x="-47" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Tabella per relazione n a n" vertex="1">
+          <mxGeometry height="30" width="200" x="-630.25" y="950" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-13" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Torneo_squadra" vertex="1">
+          <mxGeometry height="200" width="200" x="163" y="750" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-14" parent="94TMhOpVCCse5GZkjFPI-13" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="id_torneo_squadra&lt;div&gt;id_torneo&lt;br&gt;&lt;div&gt;max_sqaudre&lt;/div&gt;&lt;/div&gt;&lt;div&gt;componenti&lt;/div&gt;" vertex="1">
+          <mxGeometry height="96.25" width="140" x="30" y="51.87" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-15" edge="1" parent="1" source="WqgOdc0bc3OR8lgKfsx4-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" target="94TMhOpVCCse5GZkjFPI-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-490" y="700" as="sourcePoint" />
+            <mxPoint x="-297" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-16" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="1" vertex="1">
+          <mxGeometry height="30" width="60" x="-297" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="94TMhOpVCCse5GZkjFPI-17" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="n" vertex="1">
+          <mxGeometry height="30" width="60" x="-430" y="810" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
