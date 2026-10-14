@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import it.arenahub.backend.configurazione.ImpostazioneService;
 import it.arenahub.backend.torneo.TorneoDtos.TorneoRequest;
 import it.arenahub.backend.torneo.TorneoDtos.TorneoResponse;
 import it.arenahub.backend.torneo.SquadraDtos.CreaSquadraRequest;
@@ -24,15 +25,17 @@ public class TorneoService {
     private final SquadraRepository squadre;
     private final ComponenteSquadraRepository componenti;
     private final UtenteRepository utenti;
+    private final ImpostazioneService impostazioni;
 
     public TorneoService(TorneoRepository repository, IscrizioneRepository iscrizioni,
             SquadraRepository squadre, ComponenteSquadraRepository componenti,
-            UtenteRepository utenti) {
+            UtenteRepository utenti, ImpostazioneService impostazioni) {
         this.repository = repository;
         this.iscrizioni = iscrizioni;
         this.squadre = squadre;
         this.componenti = componenti;
         this.utenti = utenti;
+        this.impostazioni = impostazioni;
     }
 
     @Transactional(readOnly = true)
@@ -68,6 +71,7 @@ public class TorneoService {
         if (iscrizioni.countByTorneo_Id(torneoId) >= torneo.getIndividuale().getMaxPartecipanti()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Torneo al completo");
         }
+        controllaLimiteTorneiAttivi(utenteId);
         Utente utente = utenti.getReferenceById(utenteId);
         iscrizioni.save(new Iscrizione(torneo, utente));
     }
@@ -102,6 +106,7 @@ public class TorneoService {
         if (squadre.countByTorneo_Id(torneoId) >= torneo.getSquadre().getMaxSquadre()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Torneo al completo");
         }
+        controllaLimiteTorneiAttivi(creatoreId);
         Utente creatore = utenti.getReferenceById(creatoreId);
         Squadra squadra = squadre.save(new Squadra(torneo, nome, creatore));
         componenti.save(new ComponenteSquadra(squadra, creatore));
@@ -197,6 +202,15 @@ public class TorneoService {
                 || oggi.isAfter(torneo.getDataFineIscrizioni())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Le iscrizioni al torneo non sono aperte");
+        }
+    }
+
+    private void controllaLimiteTorneiAttivi(Integer utenteId) {
+        int limite = impostazioni.maxTorneiAttivi();
+        long torneiAttivi = iscrizioni.countTorneiAttiviByUtenteId(utenteId);
+        if (torneiAttivi >= limite) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Hai raggiunto il limite di " + limite + " tornei attivi");
         }
     }
 
