@@ -65,9 +65,11 @@ public class SicurezzaConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/auth/registrazione", "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/registrazione", "/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tornei", "/api/tornei/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/tornei", "/api/tornei/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/tornei/*/iscrizione", "/api/tornei/*/squadre").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/tornei/*/iscrizione", "/api/tornei/*/squadre").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/tornei").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/tornei/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/tornei/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

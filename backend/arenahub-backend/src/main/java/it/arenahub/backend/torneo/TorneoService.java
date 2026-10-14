@@ -1,7 +1,9 @@
 package it.arenahub.backend.torneo;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -10,12 +12,28 @@ import org.springframework.web.server.ResponseStatusException;
 
 import it.arenahub.backend.torneo.TorneoDtos.TorneoRequest;
 import it.arenahub.backend.torneo.TorneoDtos.TorneoResponse;
+import it.arenahub.backend.torneo.SquadraDtos.CreaSquadraRequest;
+import it.arenahub.backend.torneo.SquadraDtos.SquadraResponse;
+import it.arenahub.backend.utente.Utente;
+import it.arenahub.backend.utente.UtenteRepository;
 
 @Service
 public class TorneoService {
     private final TorneoRepository repository;
+    private final IscrizioneRepository iscrizioni;
+    private final SquadraRepository squadre;
+    private final ComponenteSquadraRepository componenti;
+    private final UtenteRepository utenti;
 
-    public TorneoService(TorneoRepository repository) { this.repository = repository; }
+    public TorneoService(TorneoRepository repository, IscrizioneRepository iscrizioni,
+            SquadraRepository squadre, ComponenteSquadraRepository componenti,
+            UtenteRepository utenti) {
+        this.repository = repository;
+        this.iscrizioni = iscrizioni;
+        this.squadre = squadre;
+        this.componenti = componenti;
+        this.utenti = utenti;
+    }
 
     @Transactional(readOnly = true)
     public List<TorneoResponse> elenco() {
@@ -24,6 +42,82 @@ public class TorneoService {
 
     @Transactional(readOnly = true)
     public TorneoResponse dettaglio(Integer id) { return risposta(trova(id)); }
+
+    @Transactional(readOnly = true)
+    public List<TorneoResponse> miei(Integer utenteId) {
+        Map<Integer, Torneo> tornei = new LinkedHashMap<>();
+        iscrizioni.findAllByUtente_Id(utenteId)
+                .forEach(iscrizione -> tornei.put(iscrizione.getTorneo().getId(), iscrizione.getTorneo()));
+        componenti.findAllByUtente_Id(utenteId)
+                .forEach(componente -> tornei.put(componente.getSquadra().getTorneo().getId(),
+                        componente.getSquadra().getTorneo()));
+        return tornei.values().stream().map(this::risposta).toList();
+    }
+
+    @Transactional
+    public void iscrivi(Integer torneoId, Integer utenteId) {
+        Torneo torneo = trova(torneoId);
+        controllaIscrizioniAperte(torneo);
+        if (modalita(torneo) != ModalitaTorneo.INDIVIDUALE) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Questo torneo richiede l'iscrizione di una squadra");
+        }
+        if (iscrizioni.existsByTorneo_IdAndUtente_Id(torneoId, utenteId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Utente già iscritto al torneo");
+        }
+        if (iscrizioni.countByTorneo_Id(torneoId) >= torneo.getIndividuale().getMaxPartecipanti()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Torneo al completo");
+        }
+        Utente utente = utenti.getReferenceById(utenteId);
+        iscrizioni.save(new Iscrizione(torneo, utente));
+    }
+
+    @Transactional
+    public void disiscrivi(Integer torneoId, Integer utenteId) {
+        Torneo torneo = trova(torneoId);
+        controllaIscrizioniAperte(torneo);
+        Iscrizione iscrizione = iscrizioni.findByTorneo_IdAndUtente_Id(torneoId, utenteId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Iscrizione non trovata"));
+        iscrizioni.delete(iscrizione);
+    }
+
+    @Transactional
+    public SquadraResponse creaSquadra(Integer torneoId, Integer creatoreId, CreaSquadraRequest request) {
+        Torneo torneo = trova(torneoId);
+        controllaIscrizioniAperte(torneo);
+        if (modalita(torneo) != ModalitaTorneo.SQUADRE) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Questo torneo accetta iscrizioni individuali");
+        }
+        String nome = request.nome().trim();
+        if (squadre.existsByTorneo_IdAndNomeIgnoreCase(torneoId, nome)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Esiste già una squadra con questo nome nel torneo");
+        }
+        if (squadre.existsByTorneo_IdAndCreatore_Id(torneoId, creatoreId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Hai già creato una squadra per questo torneo");
+        }
+        if (squadre.countByTorneo_Id(torneoId) >= torneo.getSquadre().getMaxSquadre()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Torneo al completo");
+        }
+        Utente creatore = utenti.getReferenceById(creatoreId);
+        Squadra squadra = squadre.save(new Squadra(torneo, nome, creatore));
+        componenti.save(new ComponenteSquadra(squadra, creatore));
+        return SquadraResponse.da(squadra);
+    }
+
+    @Transactional
+    public void annullaSquadra(Integer torneoId, Integer creatoreId) {
+        Torneo torneo = trova(torneoId);
+        controllaIscrizioniAperte(torneo);
+        Squadra squadra = squadre.findByTorneo_IdAndCreatore_Id(torneoId, creatoreId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Non hai creato una squadra per questo torneo"));
+        // La FK del DB elimina i componenti della squadra tramite ON DELETE CASCADE.
+        squadre.delete(squadra);
+    }
 
     @Transactional
     public TorneoResponse crea(TorneoRequest request) {
@@ -94,6 +188,15 @@ public class TorneoService {
                 || request.dataInizioTorneo().isAfter(request.dataFineTorneo())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Le date devono rispettare: inizio iscrizioni <= fine iscrizioni <= inizio torneo <= fine torneo");
+        }
+    }
+
+    private void controllaIscrizioniAperte(Torneo torneo) {
+        LocalDate oggi = LocalDate.now();
+        if (torneo.isCancellato() || oggi.isBefore(torneo.getDataInizioIscrizioni())
+                || oggi.isAfter(torneo.getDataFineIscrizioni())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Le iscrizioni al torneo non sono aperte");
         }
     }
 

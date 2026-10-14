@@ -17,17 +17,28 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import it.arenahub.backend.utente.UtenteDtos.ModificaUtenteRequest;
 import it.arenahub.backend.utente.UtenteDtos.UtenteResponse;
+import it.arenahub.backend.torneo.TorneoService;
+import it.arenahub.backend.torneo.TorneoDtos.TorneoResponse;
 
 @RestController
 @RequestMapping("/api")
 public class UtenteController {
     private final UtenteService utenti;
+    private final TorneoService tornei;
 
-    public UtenteController(UtenteService utenti) { this.utenti = utenti; }
+    public UtenteController(UtenteService utenti, TorneoService tornei) {
+        this.utenti = utenti;
+        this.tornei = tornei;
+    }
 
-    @GetMapping("/utenti/me")
+    @GetMapping({"/utenti/me", "/profilo"})
     public UtenteResponse mioProfilo(Authentication auth) {
         return utenti.leggi(idUtente(auth));
+    }
+
+    @GetMapping("/profilo/tornei")
+    public List<TorneoResponse> mieiTornei(Authentication auth) {
+        return tornei.miei(idUtente(auth));
     }
 
     @PutMapping("/utenti/me")
@@ -53,6 +64,7 @@ public class UtenteController {
     public void eliminaUtente(@PathVariable Integer id) { utenti.elimina(id); }
 
     private Integer idUtente(Authentication auth) {
-        return ((JwtAuthenticationToken) auth).getToken().getClaim("uid");
+        Number id = ((JwtAuthenticationToken) auth).getToken().getClaim("uid");
+        return id.intValue();
     }
 }

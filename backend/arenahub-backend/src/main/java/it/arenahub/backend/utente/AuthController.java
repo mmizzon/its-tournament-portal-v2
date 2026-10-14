@@ -39,7 +39,7 @@ public class AuthController {
         this.durataMinuti = durataMinuti;
     }
 
-    @PostMapping("/registrazione")
+    @PostMapping({"/registrazione", "/register"})
     @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.CREATED)
     public UtenteResponse registra(@Valid @RequestBody RegistrazioneRequest request) {
         return utenti.registra(request);
@@ -66,4 +66,12 @@ public class AuthController {
         return new LoginResponse(token, "Bearer", durataMinuti * 60,
                 UtenteResponse.da(utente));
     }
+
+    /**
+     * Il JWT è stateless: il server non conserva una sessione da invalidare.
+     * La disconnessione effettiva consiste nel cancellare il token dal client.
+     */
+    @PostMapping("/logout")
+    @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout() { }
 }
