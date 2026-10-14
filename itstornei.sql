@@ -21,7 +21,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'd86f9c1c-c619-11f1-9178-2800af4a2531:1-23';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'd86f9c1c-c619-11f1-9178-2800af4a2531:1-36';
 
 --
 -- Table structure for table `componente_squadra`
@@ -40,7 +40,22 @@ CREATE TABLE `componente_squadra` (
   KEY `fk_componente_utente` (`id_utente`),
   CONSTRAINT `fk_componente_squadra` FOREIGN KEY (`id_squadra`) REFERENCES `squadra` (`id_squadra`) ON DELETE CASCADE,
   CONSTRAINT `fk_componente_utente` FOREIGN KEY (`id_utente`) REFERENCES `utente` (`id_utente`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `impostazione`
+--
+
+DROP TABLE IF EXISTS `impostazione`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `impostazione` (
+  `id_impostazione` int NOT NULL AUTO_INCREMENT,
+  `valore` int NOT NULL,
+  PRIMARY KEY (`id_impostazione`),
+  CONSTRAINT `chk_valore` CHECK ((`valore` > 0))
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -60,7 +75,7 @@ CREATE TABLE `iscrizione` (
   KEY `fk_iscrizione_utente` (`id_utente`),
   CONSTRAINT `fk_iscrizione_torneo` FOREIGN KEY (`id_torneo`) REFERENCES `torneo` (`id_torneo`) ON DELETE CASCADE,
   CONSTRAINT `fk_iscrizione_utente` FOREIGN KEY (`id_utente`) REFERENCES `utente` (`id_utente`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,7 +96,7 @@ CREATE TABLE `squadra` (
   KEY `fk_squadra_creatore` (`id_creatore`),
   CONSTRAINT `fk_squadra_creatore` FOREIGN KEY (`id_creatore`) REFERENCES `utente` (`id_utente`),
   CONSTRAINT `fk_squadra_torneo_comune` FOREIGN KEY (`id_torneo`) REFERENCES `torneo` (`id_torneo`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,6 +127,23 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = @saved_cs_client;
 
 --
+-- Temporary view structure for view `tornei_disponibilita`
+--
+
+DROP TABLE IF EXISTS `tornei_disponibilita`;
+/*!50001 DROP VIEW IF EXISTS `tornei_disponibilita`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `tornei_disponibilita` AS SELECT 
+ 1 AS `id_torneo`,
+ 1 AS `nome`,
+ 1 AS `descrizione`,
+ 1 AS `modalita`,
+ 1 AS `iscrizioni_aperte`,
+ 1 AS `posti_residui`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `torneo`
 --
 
@@ -131,7 +163,7 @@ CREATE TABLE `torneo` (
   CONSTRAINT `chk_iscr_torneo` CHECK ((`data_fine_iscrizioni` <= `data_inizio_torneo`)),
   CONSTRAINT `chk_iscrizioni` CHECK ((`data_inizio_iscrizioni` <= `data_fine_iscrizioni`)),
   CONSTRAINT `chk_torneo` CHECK ((`data_inizio_torneo` <= `data_fine_torneo`))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -149,7 +181,7 @@ CREATE TABLE `torneo_individuale` (
   UNIQUE KEY `id_torneo` (`id_torneo`),
   CONSTRAINT `fk_individuale_torneo` FOREIGN KEY (`id_torneo`) REFERENCES `torneo` (`id_torneo`) ON DELETE CASCADE,
   CONSTRAINT `chk_max_partecipanti` CHECK ((`max_partecipanti` > 0))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -169,7 +201,7 @@ CREATE TABLE `torneo_squadra` (
   CONSTRAINT `fk_squadra_torneo` FOREIGN KEY (`id_torneo`) REFERENCES `torneo` (`id_torneo`) ON DELETE CASCADE,
   CONSTRAINT `chk_componenti` CHECK ((`componenti` > 0)),
   CONSTRAINT `chk_max_squadre` CHECK ((`max_squadre` > 0))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -189,7 +221,7 @@ CREATE TABLE `utente` (
   `data_registrazione` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_utente`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -209,6 +241,24 @@ CREATE TABLE `utente` (
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `tornei_disponibilita`
+--
+
+/*!50001 DROP VIEW IF EXISTS `tornei_disponibilita`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `tornei_disponibilita` AS select `t`.`id_torneo` AS `id_torneo`,`t`.`nome` AS `nome`,`t`.`descrizione` AS `descrizione`,`t`.`modalita` AS `modalita`,`t`.`iscrizioni_aperte` AS `iscrizioni_aperte`,(case when (`t`.`modalita` = 'INDIVIDUALE') then greatest((`t`.`max_partecipanti` - `t`.`numero_partecipanti`),0) when (`t`.`modalita` = 'SQUADRE') then greatest((`t`.`max_squadre` - `t`.`numero_squadre`),0) end) AS `posti_residui` from `tornei_con_stato` `t` where (`t`.`cancellato` = 0) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -220,4 +270,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-10-12 16:00:48
+-- Dump completed on 2026-10-14 14:36:08
