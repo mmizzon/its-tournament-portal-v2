@@ -1,0 +1,6 @@
+   backend/arenahub-backend/bin/
+   backend/arenahub-backend/target/
+   backend/arenahub-backend/.classpath
+   backend/arenahub-backend/.project
+   backend/arenahub-backend/.settings/
+   *.class
