@@ -8,4 +8,5 @@ public interface ComponenteSquadraRepository extends JpaRepository<ComponenteSqu
     boolean existsBySquadra_IdAndUtente_Id(Integer squadraId, Integer utenteId);
     List<ComponenteSquadra> findAllByUtente_Id(Integer utenteId);
     long countBySquadra_Id(Integer squadraId);
+    boolean existsBySquadra_Torneo_IdAndUtente_Id(Integer torneoId, Integer utenteId);
 }

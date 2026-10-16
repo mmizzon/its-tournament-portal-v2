@@ -47,7 +47,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-        Utente utente = utenti.richiediPerEmail(request.email().trim());
+        Utente utente = utenti.richiediPerEmail(request.email().trim().toLowerCase());
         if (!passwordEncoder.matches(request.password(), utente.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenziali non valide");
         }
@@ -67,10 +67,6 @@ public class AuthController {
                 UtenteResponse.da(utente));
     }
 
-    /**
-     * Il JWT è stateless: il server non conserva una sessione da invalidare.
-     * La disconnessione effettiva consiste nel cancellare il token dal client.
-     */
     @PostMapping("/logout")
     @org.springframework.web.bind.annotation.ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout() { }

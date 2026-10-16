@@ -38,6 +38,9 @@ public class UtenteController {
 
     @GetMapping("/profilo/tornei")
     public List<TorneoResponse> mieiTornei(Authentication auth) {
+        if (!(auth instanceof JwtAuthenticationToken)) {
+            return List.of();
+        }
         return tornei.miei(idUtente(auth));
     }
 

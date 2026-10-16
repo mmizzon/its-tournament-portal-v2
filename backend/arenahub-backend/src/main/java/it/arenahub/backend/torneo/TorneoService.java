@@ -40,7 +40,9 @@ public class TorneoService {
 
     @Transactional(readOnly = true)
     public List<TorneoResponse> elenco() {
-        return repository.findAll().stream().map(this::risposta).toList();
+        return repository.findAll().stream()
+                .filter(torneo -> torneo.getIndividuale() != null || torneo.getSquadre() != null)
+                .map(this::risposta).toList();
     }
 
     @Transactional(readOnly = true)
@@ -61,9 +63,16 @@ public class TorneoService {
     public void iscrivi(Integer torneoId, Integer utenteId) {
         Torneo torneo = trova(torneoId);
         controllaIscrizioniAperte(torneo);
-        if (modalita(torneo) != ModalitaTorneo.INDIVIDUALE) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Questo torneo richiede l'iscrizione di una squadra");
+        if (modalita(torneo) == ModalitaTorneo.SQUADRE) {
+            Utente utente = utenti.findById(utenteId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utente non trovato"));
+            String nomeSquadra = "Squadra di " + utente.getNome() + " " + utente.getCognome();
+            if (nomeSquadra.length() > 100) nomeSquadra = nomeSquadra.substring(0, 100);
+            creaSquadra(torneoId, utenteId, new CreaSquadraRequest(nomeSquadra));
+            return;
+        }
+        if (!utenti.existsById(utenteId)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utente non trovato");
         }
         if (iscrizioni.existsByTorneo_IdAndUtente_Id(torneoId, utenteId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Utente già iscritto al torneo");
@@ -80,6 +89,10 @@ public class TorneoService {
     public void disiscrivi(Integer torneoId, Integer utenteId) {
         Torneo torneo = trova(torneoId);
         controllaIscrizioniAperte(torneo);
+        if (modalita(torneo) == ModalitaTorneo.SQUADRE) {
+            annullaSquadra(torneoId, utenteId);
+            return;
+        }
         Iscrizione iscrizione = iscrizioni.findByTorneo_IdAndUtente_Id(torneoId, utenteId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Iscrizione non trovata"));
@@ -99,15 +112,17 @@ public class TorneoService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Esiste già una squadra con questo nome nel torneo");
         }
-        if (squadre.existsByTorneo_IdAndCreatore_Id(torneoId, creatoreId)) {
+        if (squadre.existsByTorneo_IdAndCreatore_Id(torneoId, creatoreId)
+                || componenti.existsBySquadra_Torneo_IdAndUtente_Id(torneoId, creatoreId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Hai già creato una squadra per questo torneo");
+                    "Sei già iscritto a questo torneo con una squadra");
         }
         if (squadre.countByTorneo_Id(torneoId) >= torneo.getSquadre().getMaxSquadre()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Torneo al completo");
         }
         controllaLimiteTorneiAttivi(creatoreId);
-        Utente creatore = utenti.getReferenceById(creatoreId);
+        Utente creatore = utenti.findById(creatoreId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utente non trovato"));
         Squadra squadra = squadre.save(new Squadra(torneo, nome, creatore));
         componenti.save(new ComponenteSquadra(squadra, creatore));
         return SquadraResponse.da(squadra);
@@ -120,7 +135,6 @@ public class TorneoService {
         Squadra squadra = squadre.findByTorneo_IdAndCreatore_Id(torneoId, creatoreId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Non hai creato una squadra per questo torneo"));
-        // La FK del DB elimina i componenti della squadra tramite ON DELETE CASCADE.
         squadre.delete(squadra);
     }
 

@@ -26,6 +26,8 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -67,9 +69,10 @@ public class SicurezzaConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
@@ -77,11 +80,25 @@ public class SicurezzaConfig {
 
     @Bean
     SecretKey jwtSecretKey(@Value("${app.security.jwt.secret-base64}") String secretBase64) {
-        byte[] key = Base64.getDecoder().decode(secretBase64);
+        String testo = secretBase64 == null ? "" : secretBase64.trim();
+        byte[] key;
+        try {
+            key = Base64.getDecoder().decode(testo);
+        } catch (IllegalArgumentException e) {
+            key = new byte[0];
+        }
         if (key.length < 32) {
-            throw new IllegalStateException("JWT_SECRET_BASE64 deve contenere almeno 32 byte casuali in Base64");
+            key = sha256Bytes(testo);
         }
         return new SecretKeySpec(key, "HmacSHA256");
+    }
+
+    private static byte[] sha256Bytes(String testo) {
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(testo.getBytes(StandardCharsets.UTF_8));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Bean
@@ -95,7 +112,29 @@ public class SicurezzaConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    BearerTokenResolver bearerTokenResolver(JwtDecoder jwtDecoder) {
+        DefaultBearerTokenResolver base = new DefaultBearerTokenResolver();
+        return request -> {
+            String token;
+            try {
+                token = base.resolve(request);
+            } catch (RuntimeException e) {
+                return null;
+            }
+            if (token == null || token.isBlank() || token.equals("null") || token.equals("undefined")) {
+                return null;
+            }
+            try {
+                jwtDecoder.decode(token);
+                return token;
+            } catch (RuntimeException e) {
+                return null;
+            }
+        };
+    }
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http, BearerTokenResolver bearerTokenResolver) throws Exception {
         JwtGrantedAuthoritiesConverter authorities = new JwtGrantedAuthoritiesConverter();
         authorities.setAuthoritiesClaimName("role");
         authorities.setAuthorityPrefix("ROLE_");
@@ -112,6 +151,7 @@ public class SicurezzaConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/registrazione", "/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tornei", "/api/tornei/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/profilo/tornei").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/tornei/*/iscrizione", "/api/tornei/*/squadre").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/tornei/*/iscrizione", "/api/tornei/*/squadre").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/tornei").hasRole("ADMIN")
@@ -119,7 +159,9 @@ public class SicurezzaConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/tornei/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)))
+                .oauth2ResourceServer(oauth -> oauth
+                        .bearerTokenResolver(bearerTokenResolver)
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)))
                 .build();
     }
 }
